@@ -1,0 +1,26 @@
+{
+  "name": "necx-messaging-take-home",
+  "private": true,
+  "version": "1.0.0",
+  "description": "NECX Full-Stack Take-Home Interview Project",
+  "scripts": {
+    "postinstall": "npm --prefix backend install && npm --prefix frontend install",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev": "concurrently -k -n backend,frontend -c blue,green \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix backend start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  },
+  "keywords": [
+    "interview",
+    "fullstack",
+    "messaging",
+    "react",
+    "express"
+  ],
+  "author": "NECX",
+  "license": "MIT"
+}

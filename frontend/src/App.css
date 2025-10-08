@@ -1,0 +1,131 @@
+.app {
+  min-height: 100vh;
+  background-color: #1a1f2e;
+  color: #ffffff;
+}
+
+.app-header {
+  background-color: #242b3d;
+  padding: 2rem;
+  text-align: center;
+  border-bottom: 1px solid #3a4759;
+}
+
+.app-header h1 {
+  margin: 0 0 0.5rem 0;
+  color: #4ade80;
+  font-size: 2.5rem;
+}
+
+.app-header p {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 1.1rem;
+}
+
+.app-main {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.health-check {
+  background-color: #242b3d;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid #3a4759;
+}
+
+.health-check h2 {
+  margin-top: 0;
+  color: #4ade80;
+}
+
+.status-loading {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.status-card {
+  background-color: #1a1f2e;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-left: 4px solid;
+}
+
+.status-card.ok {
+  border-left-color: #4ade80;
+}
+
+.status-card.error {
+  border-left-color: #ef4444;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.ok {
+  background-color: #4ade80;
+}
+
+.status-dot.error {
+  background-color: #ef4444;
+}
+
+.error-details {
+  background-color: #7f1d1d;
+  border-radius: 4px;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.refresh-btn {
+  background-color: #4ade80;
+  color: #1a1f2e;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.refresh-btn:hover {
+  background-color: #22c55e;
+}
+
+.getting-started {
+  background-color: #242b3d;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #3a4759;
+}
+
+.getting-started h2 {
+  margin-top: 0;
+  color: #4ade80;
+}
+
+.getting-started ul {
+  list-style: none;
+  padding: 0;
+}
+
+.getting-started li {
+  padding: 0.5rem 0;
+  font-size: 1.1rem;
+}
