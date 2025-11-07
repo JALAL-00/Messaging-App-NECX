@@ -26,10 +26,7 @@ function MessageList() {
                 {messages.map((msg) => (
                     <Message
                         key={msg.id}
-                        text={msg.text}
-                        senderName={msg.senderName}
-                        timestamp={formatTimestamp(msg.timestamp)}
-                        isSender={msg.senderId === currentUser?.id}
+                        message={msg} 
                     />
                 ))}
                 {/* Dummy div to scroll to */}

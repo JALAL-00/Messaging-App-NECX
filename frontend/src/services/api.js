@@ -12,6 +12,12 @@ export const createUser = (name) => api.post('/users', { name });
 
 // Message API calls
 export const getMessages = () => api.get('/messages');
-export const sendMessage = (message) => api.post('/messages', message); // message will be { text, senderId }
+export const sendMessage = (message) => api.post('/messages', message); 
+
+// Message API Delete call
+export const deleteMessage = (id) => api.delete(`/messages/${id}`);
+
+// Message API Update call
+export const updateMessage = (id, newText) => api.put(`/messages/${id}`, { text: newText });
 
 export default api;

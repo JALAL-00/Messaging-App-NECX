@@ -11,22 +11,19 @@
     {
       "id": "dee09546-8939-4265-b094-3ee0af0b78c3",
       "name": "Test"
+    },
+    {
+      "id": "dfe7e9c5-6003-4200-8067-e4d7dad2b945",
+      "name": "Jalal"
     }
   ],
   "messages": [
     {
-      "id": "0d7e705c-3d6e-4eac-804e-b63f0bc5c885",
+      "id": "65151fef-4fea-4705-addb-78497ab97d11",
       "text": "Hello",
-      "senderId": "2",
-      "senderName": "you",
-      "timestamp": "2025-11-07T21:42:03.873Z"
-    },
-    {
-      "id": "580e24c4-64d9-441d-a264-74dc2bc68c63",
-      "text": "Hi",
-      "senderId": "1",
-      "senderName": "me",
-      "timestamp": "2025-11-07T21:42:09.258Z"
+      "senderId": "dfe7e9c5-6003-4200-8067-e4d7dad2b945",
+      "senderName": "Jalal",
+      "timestamp": "2025-11-07T22:27:33.720Z"
     }
   ]
 }
