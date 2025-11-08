@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '../contexts/AppContext';
 
-// Reusable SVG Icon Components
 const EditIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
         <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
@@ -21,44 +20,35 @@ const TrashIcon = () => (
     </svg>
 );
 
-
 function Message({ message }) {
     const { currentUser, handleDeleteMessage, handleUpdateMessage, formatTimestamp } = useAppContext();
     const { id, text, senderName, timestamp, senderId, edited } = message;
 
-    // --- Local state for managing edit mode ---
     const [isEditing, setIsEditing] = useState(false);
     const [editedText, setEditedText] = useState(text);
     const editInputRef = useRef(null);
     
-    // --- Determine if the current user is the sender of this message ---
     const isSender = senderId === currentUser?.id;
     
-    // --- Automatically focus the input field when edit mode begins ---
     useEffect(() => {
         if (isEditing) {
             editInputRef.current?.focus();
-            // Move the cursor to the end of the text for a better editing experience
             editInputRef.current?.setSelectionRange(editedText.length, editedText.length);
         }
     }, [isEditing, editedText.length]);
 
-
-    // --- Handlers for Save and Cancel actions ---
     const handleSave = () => {
-        // Only save if the text is not empty and has actually changed
         if (editedText.trim() && editedText.trim() !== text) {
             handleUpdateMessage(id, editedText);
         }
-        setIsEditing(false); // Exit edit mode regardless
+        setIsEditing(false);
     };
     
     const handleCancel = () => {
-        setEditedText(text); // Revert any changes
+        setEditedText(text);
         setIsEditing(false);
     };
 
-    // --- Conditional styling object for cleaner JSX ---
     const classes = {
         wrapper: isSender ? 'self-end' : 'self-start',
         bubble: isSender ? 'bg-accent-green text-primary rounded-br-none' : 'bg-secondary text-text-primary rounded-bl-none',
@@ -69,8 +59,6 @@ function Message({ message }) {
 
     return (
         <div className={`flex items-center gap-2 group ${classes.wrapper}`}>
-            
-            {/* Action buttons (Edit/Delete) - only for the sender */}
             {isSender && (
                 <div className="flex self-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={() => setIsEditing(true)} className={`p-1 rounded-full ${classes.senderButton}`} aria-label="Edit message"><EditIcon /></button>
@@ -78,10 +66,8 @@ function Message({ message }) {
                 </div>
             )}
 
-            {/* Main message bubble */}
             <div className={`max-w-xs md:max-w-md w-fit rounded-xl p-3 shadow-md flex flex-col ${classes.bubble}`}>
                 {isEditing ? (
-                    // --- EDITING VIEW ---
                     <div className="flex flex-col gap-2">
                         <textarea
                             ref={editInputRef}
@@ -94,17 +80,16 @@ function Message({ message }) {
                             className="bg-inherit text-inherit placeholder-gray-400 outline-none resize-none text-sm leading-tight"
                             rows={3}
                         />
-                         <div className="flex items-center justify-end gap-2">
-                             <button onClick={handleCancel} className="text-xs font-semibold hover:underline">Cancel</button>
-                             <button onClick={handleSave} className="bg-white/30 hover:bg-white/40 rounded-full p-1.5"><CheckIcon /></button>
-                         </div>
+                        <div className="flex items-center justify-end gap-2">
+                            <button onClick={handleCancel} className="text-xs font-semibold hover:underline">Cancel</button>
+                            <button onClick={handleSave} className="bg-white/30 hover:bg-white/40 rounded-full p-1.5"><CheckIcon /></button>
+                        </div>
                     </div>
                 ) : (
-                    // --- DISPLAY VIEW ---
                     <>
                         <p className="text-base break-words">{text}</p>
                         <div className="flex items-center justify-end gap-2 text-xs mt-1">
-                             {edited && <span className={classes.timestamp}>(edited)</span>}
+                            {edited && <span className={classes.timestamp}>(edited)</span>}
                             <p className={classes.timestamp}>
                                 {senderName} - {formatTimestamp(timestamp)}
                             </p>
@@ -113,9 +98,8 @@ function Message({ message }) {
                 )}
             </div>
 
-             {/* Delete button for messages from other personas */}
             {!isSender && (
-                 <button onClick={() => handleDeleteMessage(id)} className={`self-center p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ${classes.button}`} aria-label="Delete message"><TrashIcon /></button>
+                <button onClick={() => handleDeleteMessage(id)} className={`self-center p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ${classes.button}`} aria-label="Delete message"><TrashIcon /></button>
             )}
         </div>
     );

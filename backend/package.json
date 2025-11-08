@@ -12,6 +12,7 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "lowdb": "^6.1.1",
+    "multer": "^2.0.2",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

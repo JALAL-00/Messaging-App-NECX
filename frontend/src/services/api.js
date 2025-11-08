@@ -6,18 +6,26 @@ const api = axios.create({
   baseURL: API_URL,
 });
 
-// User API calls
 export const getUsers = () => api.get('/users');
 export const createUser = (name) => api.post('/users', { name });
-
-// Message API calls
 export const getMessages = () => api.get('/messages');
-export const sendMessage = (message) => api.post('/messages', message); 
-
-// Message API Delete call
+export const sendMessage = (message) => api.post('/messages', message);
 export const deleteMessage = (id) => api.delete(`/messages/${id}`);
-
-// Message API Update call
 export const updateMessage = (id, newText) => api.put(`/messages/${id}`, { text: newText });
+
+export const importData = (file) => {
+  const formData = new FormData();
+  formData.append('backup', file); 
+
+  return api.post('/import', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};
+
+export const exportData = () => api.get('/export', {
+  responseType: 'blob', 
+});
 
 export default api;

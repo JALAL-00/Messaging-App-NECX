@@ -1,39 +1,13 @@
 {
   "users": [
     {
-      "id": "1",
-      "name": "me"
+      "id": "user-me",
+      "name": "jalal"
     },
     {
-      "id": "2",
+      "id": "user-you",
       "name": "you"
-    },
-    {
-      "id": "dfe7e9c5-6003-4200-8067-e4d7dad2b945",
-      "name": "Jalal"
     }
   ],
-  "messages": [
-    {
-      "id": "65151fef-4fea-4705-addb-78497ab97d11",
-      "text": "Hello",
-      "senderId": "dfe7e9c5-6003-4200-8067-e4d7dad2b945",
-      "senderName": "Jalal",
-      "timestamp": "2025-11-07T22:27:33.720Z"
-    },
-    {
-      "id": "6dd24a69-42c4-4086-ae6a-ad081e179f60",
-      "text": "Hay",
-      "senderId": "1",
-      "senderName": "me",
-      "timestamp": "2025-11-08T05:23:18.629Z"
-    },
-    {
-      "id": "430e1f7d-37f6-455f-98ea-86bd7d86aa1a",
-      "text": "What up?",
-      "senderId": "1",
-      "senderName": "me",
-      "timestamp": "2025-11-08T05:23:24.086Z"
-    }
-  ]
+  "messages": []
 }

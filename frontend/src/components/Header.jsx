@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '../contexts/AppContext';
-// Import icons from the library we just installed
 import { HiCog, HiChevronDown, HiOutlineDocumentDownload, HiOutlineUpload } from 'react-icons/hi';
 
 function Header() {
@@ -9,13 +8,11 @@ function Header() {
         setSearchQuery, isSubmitting, handleExportData, handleImportData 
     } = useAppContext();
 
-    // Local state for UI interactions
     const [newUserName, setNewUserName] = useState('');
     const [settingsOpen, setSettingsOpen] = useState(false);
     const fileInputRef = useRef(null);
     const settingsMenuRef = useRef(null);
 
-    // Close the settings dropdown if the user clicks outside of it
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (settingsMenuRef.current && !settingsMenuRef.current.contains(event.target)) {
@@ -25,7 +22,6 @@ function Header() {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
-
 
     const handleSubmitUser = async (e) => {
         e.preventDefault();
@@ -39,10 +35,9 @@ function Header() {
         setCurrentUser(selectedUser);
     };
 
-    // --- Logic from the old Settings.jsx component, now integrated here ---
     const onImportClick = () => {
         fileInputRef.current.click();
-        setSettingsOpen(false); // Close menu after click
+        setSettingsOpen(false);
     };
 
     const onFileSelected = (event) => {
@@ -57,10 +52,8 @@ function Header() {
                 <h1 className="text-xl md:text-2xl font-bold text-text-primary whitespace-nowrap">NECX Messaging</h1>
                 
                 <div className="flex items-center space-x-3">
-                    {/* Compact Search Bar */}
                     <input type="search" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-primary border border-border rounded-md px-3 py-2 text-sm w-40 placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-accent-green" />
 
-                    {/* Sender Dropdown */}
                     <div className="flex items-center space-x-2">
                         <label className="text-sm text-text-secondary" htmlFor="sender-select">Sender</label>
                         <select id="sender-select" value={currentUser?.id || ''} onChange={handleUserChange} className="bg-primary border-border rounded-md pl-3 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-green appearance-none" style={{ backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="%239CA3AF"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>')`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.25em' }}>
@@ -68,7 +61,6 @@ function Header() {
                         </select>
                     </div>
 
-                    {/* Compact Create User Form */}
                     <form onSubmit={handleSubmitUser} className="flex items-center">
                         <input type="text" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} placeholder="New user..." className="bg-primary border border-border rounded-l-md px-3 py-2 text-sm w-32 placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-accent-green z-10" />
                         <button type="submit" disabled={isSubmitting} className="bg-accent-green text-primary font-bold px-3 py-2 rounded-r-md text-sm hover:bg-accent-light-green transition-colors focus:outline-none relative right-px disabled:opacity-60 disabled:cursor-not-allowed">
@@ -76,7 +68,6 @@ function Header() {
                         </button>
                     </form>
 
-                    {/* --- NEW Settings Dropdown --- */}
                     <div className="relative" ref={settingsMenuRef}>
                         <button onClick={() => setSettingsOpen(prev => !prev)} className="p-2 rounded-full hover:bg-primary transition-colors focus:outline-none focus:ring-2 focus:ring-accent-green">
                             <HiCog className="h-5 w-5 text-text-secondary" />

@@ -2,24 +2,24 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
     extend: {
       colors: {
-        'primary': '#1A1F2E', // Main background
-        'secondary': '#242B3D', // Component backgrounds (input, header)
-        'accent': {
-          'green': '#4ADE80', // Main accent color for buttons and 'me' messages
-          'light-green': '#22C55E' // A darker green for hover states
+        primary: '#1A1F2E',
+        secondary: '#242B3D',
+        accent: {
+          green: '#4ADE80',
+          'light-green': '#22C55E'
         },
-        'text': {
-          'primary': '#FFFFFF',
-          'secondary': '#9CA3AF' // Lighter text for timestamps, placeholders
+        text: {
+          primary: '#FFFFFF',
+          secondary: '#9CA3AF'
         },
-        'border': '#3A4759',
+        border: '#3A4759'
       }
-    },
+    }
   },
-  plugins: [],
-}
+  plugins: []
+};

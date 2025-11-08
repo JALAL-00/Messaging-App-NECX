@@ -4,55 +4,62 @@ import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
-// Import our new route handlers
+import multer from 'multer';
 import userRoutes from './routes/users.js';
 import messageRoutes from './routes/messages.js';
 
-
-// --- Database Setup ---
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const file = path.join(__dirname, 'db/db.json');
-
-const adapter = new JSONFile(file);
+const dbFile = path.join(__dirname, 'db/db.json');
+const adapter = new JSONFile(dbFile);
 const defaultData = { users: [], messages: [] };
 export const db = new Low(adapter, defaultData);
-// Read data from DB to start with
 await db.read();
 
-// --- App & Middleware Setup ---
 const app = express();
-const PORT = 4000; // Updated Port as per requirements
-
+const PORT = 4000;
 app.use(cors());
 app.use(express.json());
 
+const upload = multer({ storage: multer.memoryStorage() });
 
-// --- API Routes ---
-// Health check endpoint remains the same
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'Backend is running on port 4000' });
+    res.status(200).json({ status: 'OK', message: 'Backend is running on port 4000' });
 });
-
-// Use the routers for specific endpoints
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
 
+app.post('/api/import', upload.single('backup'), async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file was uploaded.' });
+        }
 
-// --- Error Handling ---
-// 404 Not Found Handler
+        const fileContent = req.file.buffer.toString('utf8');
+        const dataToImport = JSON.parse(fileContent);
+
+        if (!dataToImport.users || !dataToImport.messages) {
+            return res.status(400).json({ error: 'Invalid JSON file format. Must contain users and messages arrays.' });
+        }
+
+        db.data = dataToImport;
+        await db.write();
+
+        console.log('Database successfully overwritten by import.');
+        res.status(200).json({ message: 'Data imported successfully!' });
+    } catch (error) {
+        console.error("Import failed:", error);
+        next(error);
+    }
+});
+
 app.use('*', (req, res) => {
-  res.status(404).json({ error: `Route ${req.originalUrl} not found.` });
+    res.status(404).json({ error: `Route ${req.originalUrl} not found.` });
 });
-
-// Global Error Handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!', message: err.message });
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!', message: err.message });
 });
 
-
-// --- Server Start ---
 app.listen(PORT, () => {
-  console.log(`🚀 Backend server is running on http://localhost:${PORT}`);
+    console.log(`Backend server is running on http://localhost:${PORT}`);
 });

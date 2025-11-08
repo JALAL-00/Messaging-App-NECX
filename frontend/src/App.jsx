@@ -19,15 +19,15 @@ function App() {
     return (
       <div className="bg-primary min-h-screen flex items-center justify-center p-4">
         <div className="bg-red-900 border border-red-500 rounded-lg p-6 text-center">
-            <h1 className="text-xl text-white mb-2">Connection Error</h1>
-            <p className="text-red-300">{error}</p>
+          <h1 className="text-xl text-white mb-2">Connection Error</h1>
+          <p className="text-red-300">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-primary text-text-primary min-h-screen flex flex-col font-sans">
+    <div className="bg-primary text-text-primary h-screen flex flex-col font-sans">
       {toast && (
         <Toast 
           message={toast.message} 
@@ -35,15 +35,12 @@ function App() {
           onClose={hideToast} 
         />
       )}
-      
       <Header />
-
-      <main className="flex-1 flex flex-col overflow-y-hidden p-4">
-        <div className="max-w-4xl mx-auto h-full w-full flex flex-col">
+      <main className="flex-1 overflow-y-auto min-h-0">
+        <div className="max-w-4xl mx-auto h-full p-4">
           <MessageList />
         </div>
       </main>
-
       <MessageInput />
     </div>
   );

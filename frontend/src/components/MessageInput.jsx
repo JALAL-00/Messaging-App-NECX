@@ -2,13 +2,12 @@ import { useState } from "react";
 import { useAppContext } from "../contexts/AppContext";
 
 function MessageInput() {
-    // Get isSubmitting from the context
     const { handleSendMessage, isSubmitting } = useAppContext();
     const [text, setText] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (text.trim() === '' || isSubmitting) return; // Prevent submit while busy
+        if (text.trim() === '' || isSubmitting) return;
         await handleSendMessage(text);
         setText('');
     }
@@ -26,10 +25,10 @@ function MessageInput() {
                     />
                     <button
                         type="submit"
-                        disabled={isSubmitting} // <-- WIRED UP
-                        className="bg-accent-green text-primary font-bold px-6 py-3 rounded-lg hover:bg-accent-light-green transition-colors focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed" // <-- ADDED DISABLED STYLES
+                        disabled={isSubmitting}
+                        className="bg-accent-green text-primary font-bold px-6 py-3 rounded-lg hover:bg-accent-light-green transition-colors focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                        {isSubmitting ? '...' : 'Send'} {/* Bonus: Change text */}
+                        {isSubmitting ? '...' : 'Send'}
                     </button>
                 </form>
             </div>
