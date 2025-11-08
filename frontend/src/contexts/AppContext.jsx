@@ -1,13 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, useCallback, useRef, useMemo } from 'react';
-import { 
-    getUsers, 
-    createUser, 
-    getMessages, 
-    sendMessage, 
-    deleteMessage, 
-    updateMessage,
-    importData 
-} from '../services/api';
+import { getUsers, createUser, getMessages, sendMessage, deleteMessage, updateMessage, importData } from '../services/api';
 import { format } from 'date-fns';
 
 export const AppContext = createContext();
@@ -42,23 +34,15 @@ export const AppProvider = ({ children }) => {
     const fetchAllData = useCallback(async (isInitialLoad = false) => {
         try {
             if (isInitialLoad) setLoading(true);
-
-            const [usersRes, messagesRes] = await Promise.all([
-                getUsers(),
-                getMessages()
-            ]);
-
+            const [usersRes, messagesRes] = await Promise.all([getUsers(), getMessages()]);
             const fetchedUsers = usersRes.data || [];
             const fetchedMessages = messagesRes.data || [];
-
             setUsers(fetchedUsers);
             setMessages(fetchedMessages);
-
             setCurrentUser(prev =>
-                fetchedUsers.find(u => u.id === prev?.id)
-                || fetchedUsers.find(u => u.name === "me")
-                || fetchedUsers[0]
-                || null
+                fetchedUsers.find(u => u.id === prev?.id) ||
+                fetchedUsers.find(u => u.name === "me") ||
+                fetchedUsers[0] || null
             );
         } catch (err) {
             console.error("Failed to fetch data:", err);
@@ -68,9 +52,32 @@ export const AppProvider = ({ children }) => {
         }
     }, []);
 
+    const stopPolling = useCallback(() => {
+        clearInterval(pollIntervalRef.current);
+    }, []);
+
+    const startPolling = useCallback(() => {
+        stopPolling();
+        const poll = () => fetchAllData(false);
+        pollIntervalRef.current = setInterval(poll, 3000);
+    }, [stopPolling, fetchAllData]);
+
     useEffect(() => {
         fetchAllData(true);
-    }, [fetchAllData]);
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                stopPolling();
+            } else {
+                startPolling();
+            }
+        };
+        startPolling();
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => {
+            stopPolling();
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
+    }, [fetchAllData, startPolling, stopPolling]);
 
     const handleCreateUser = async (name) => {
         setIsSubmitting(true);
@@ -88,7 +95,6 @@ export const AppProvider = ({ children }) => {
     const handleSendMessage = async (text) => {
         if (!currentUser) return showToast("Select a sender first.", "error");
         setIsSubmitting(true);
-
         try {
             await sendMessage({ text: text.trim(), senderId: currentUser.id });
             await fetchAllData();
@@ -113,47 +119,38 @@ export const AppProvider = ({ children }) => {
     };
 
     const handleDeleteMessage = async (id) => {
-        const originalMessages = messages;
-        setMessages(prev => prev.filter(msg => msg.id !== id));
-
+        setIsSubmitting(true);
         try {
             await deleteMessage(id);
+            await fetchAllData();
             showToast("Message deleted.");
         } catch (err) {
             showToast(err.response?.data?.error || "Delete failed.", "error");
-            setMessages(originalMessages);
-        }
-    };
-
-    const handleImportData = async (file) => {
-        setIsSubmitting(true);
-        try {
-            const response = await importData(file);
-            showToast(response.data.message || "Import successful!");
-
-            await fetchAllData();  
-        } catch (err) {
-            showToast(err.response?.data?.error || "Import failed.", "error");
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    const handleImportData = async (file) => {
+        setIsSubmitting(true);
+        stopPolling();
+        try {
+            const response = await importData(file);
+            showToast(response.data.message || "Import successful!");
+            await fetchAllData();
+        } catch (err) {
+            showToast(err.response?.data?.error || "Import failed.", "error");
+        } finally {
+            setIsSubmitting(false);
+            startPolling();
+        }
+    };
+
     const handleExportData = async () => {
         showToast("Exporting data...");
-
-        const [usersRes, messagesRes] = await Promise.all([
-            getUsers(),
-            getMessages()
-        ]);
-
-        const data = { 
-            users: usersRes.data, 
-            messages: messagesRes.data 
-        };
-
+        const [usersRes, messagesRes] = await Promise.all([getUsers(), getMessages()]);
+        const data = { users: usersRes.data, messages: messagesRes.data };
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -162,60 +159,19 @@ export const AppProvider = ({ children }) => {
         URL.revokeObjectURL(url);
     };
 
-    useEffect(() => {
-        const poll = () => fetchAllData(false);
-
-        const start = () => {
-            clearInterval(pollIntervalRef.current);
-            pollIntervalRef.current = setInterval(poll, 3000);
-        };
-
-        const stop = () => clearInterval(pollIntervalRef.current);
-
-        const handleVisibility = () => {
-            if (document.hidden) stop();
-            else start();
-        };
-
-        start();
-        document.addEventListener("visibilitychange", handleVisibility);
-
-        return () => {
-            stop();
-            document.removeEventListener("visibilitychange", handleVisibility);
-        };
-    }, [fetchAllData]);
-
     const filteredMessages = useMemo(() => {
         if (!searchQuery.trim()) return messages;
-
         const q = searchQuery.toLowerCase();
         return messages.filter(msg =>
-            msg.text.toLowerCase().includes(q)
-            || msg.senderName?.toLowerCase().includes(q)
+            msg.text.toLowerCase().includes(q) ||
+            msg.senderName?.toLowerCase().includes(q)
         );
     }, [messages, searchQuery]);
 
     const value = {
-        users,
-        messages,
-        filteredMessages,
-        currentUser,
-        loading,
-        isSubmitting,
-        error,
-        toast,
-        hideToast,
-        setCurrentUser,
-        handleCreateUser,
-        handleSendMessage,
-        handleDeleteMessage,
-        handleUpdateMessage,
-        handleExportData,
-        handleImportData,
-        formatTimestamp,
-        searchQuery,
-        setSearchQuery
+        users, messages, filteredMessages, currentUser, loading, isSubmitting, error, toast, hideToast,
+        setCurrentUser, handleCreateUser, handleSendMessage, handleDeleteMessage, handleUpdateMessage,
+        handleExportData, handleImportData, formatTimestamp, searchQuery, setSearchQuery
     };
 
     return (

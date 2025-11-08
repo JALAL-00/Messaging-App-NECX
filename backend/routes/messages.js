@@ -4,14 +4,9 @@ import { db } from '../server.js';
 
 const router = Router();
 
-router.get('/', async (req, res, next) => {
-    try {
-        await db.read();
-        const sortedMessages = db.data.messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        res.status(200).json(sortedMessages);
-    } catch (error) {
-        next(error);
-    }
+router.get('/', (req, res) => {
+    const sortedMessages = [...db.data.messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    res.status(200).json(sortedMessages);
 });
 
 router.post('/', async (req, res, next) => {
@@ -20,7 +15,6 @@ router.post('/', async (req, res, next) => {
         if (!text || !senderId) {
             return res.status(400).json({ error: 'Message text and senderId are required.' });
         }
-        await db.read();
         const sender = db.data.users.find(u => u.id === senderId);
         if (!sender) {
             return res.status(404).json({ error: 'Sender user not found.' });
@@ -43,12 +37,11 @@ router.post('/', async (req, res, next) => {
 router.delete('/:id', async (req, res, next) => {
     try {
         const { id } = req.params;
-        await db.read();
-        const messageExists = db.data.messages.find(msg => msg.id === id);
-        if (!messageExists) {
+        const initialLength = db.data.messages.length;
+        db.data.messages = db.data.messages.filter(msg => msg.id !== id);
+        if (db.data.messages.length === initialLength) {
              return res.status(404).json({ error: `Message with id ${id} not found.` });
         }
-        db.data.messages = db.data.messages.filter(msg => msg.id !== id);
         await db.write();
         res.status(200).json({ message: 'Message deleted successfully.' });
     } catch (error) {
@@ -63,7 +56,6 @@ router.put('/:id', async (req, res, next) => {
         if (!text || text.trim() === '') {
             return res.status(400).json({ error: 'Message text cannot be empty.' });
         }
-        await db.read();
         const messageToUpdate = db.data.messages.find(msg => msg.id === id);
         if (!messageToUpdate) {
             return res.status(404).json({ error: 'Message not found.' });

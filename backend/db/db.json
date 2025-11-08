@@ -7,7 +7,132 @@
     {
       "id": "user-you",
       "name": "you"
+    },
+    {
+      "id": "47354d43-a9ef-4e36-bb2c-0948616016a8",
+      "name": "Test"
+    },
+    {
+      "id": "68d91b53-508d-4e51-8f5a-bb1d35594fd7",
+      "name": "Anik"
     }
   ],
-  "messages": []
+  "messages": [
+    {
+      "id": "76c9abaf-c244-4bc2-9650-ca4a4de49283",
+      "text": "Hello Jalal",
+      "senderId": "user-you",
+      "senderName": "you",
+      "timestamp": "2025-11-08T10:52:52.500Z"
+    },
+    {
+      "id": "05dc1f56-7a9d-46b3-83a9-bcbf9e6ceafd",
+      "text": "Check your mail",
+      "senderId": "user-you",
+      "senderName": "you",
+      "timestamp": "2025-11-08T10:52:56.308Z"
+    },
+    {
+      "id": "29359e65-7555-49b6-84f5-55952341f498",
+      "text": "for the task",
+      "senderId": "user-you",
+      "senderName": "you",
+      "timestamp": "2025-11-08T10:53:01.020Z"
+    },
+    {
+      "id": "f8eed691-15ab-45f1-9711-cea9365af52d",
+      "text": "hello Sir",
+      "senderId": "user-me",
+      "senderName": "jalal",
+      "timestamp": "2025-11-08T10:53:12.673Z"
+    },
+    {
+      "id": "b20ddd20-bfb6-47b0-a72e-e1ab5a10bc88",
+      "text": "i got the mail",
+      "senderId": "user-me",
+      "senderName": "jalal",
+      "timestamp": "2025-11-08T10:53:17.671Z"
+    },
+    {
+      "id": "d9d38a37-ced9-47b4-95ee-88c3fe8c01d9",
+      "text": "I will submit the task on time",
+      "senderId": "user-me",
+      "senderName": "jalal",
+      "timestamp": "2025-11-08T10:53:25.640Z"
+    },
+    {
+      "id": "06279bbd-3e96-4566-b760-66c0c628bd9d",
+      "text": "Ok, Take care.. All the best",
+      "senderId": "user-you",
+      "senderName": "you",
+      "timestamp": "2025-11-08T10:53:59.801Z",
+      "edited": true,
+      "editedAt": "2025-11-08T10:54:05.466Z"
+    },
+    {
+      "id": "ba3e3989-adc1-40a4-a80d-07d17b6eb83e",
+      "text": "Hello",
+      "senderId": "user-me",
+      "senderName": "jalal",
+      "timestamp": "2025-11-08T10:57:19.099Z"
+    },
+    {
+      "id": "ac40d6da-0904-46b5-99dd-b8f64369ce43",
+      "text": "Hi",
+      "senderId": "user-you",
+      "senderName": "you",
+      "timestamp": "2025-11-08T10:57:22.016Z"
+    },
+    {
+      "id": "01e97147-4e44-4876-8628-4aeb3a844212",
+      "text": "What's up?",
+      "senderId": "user-you",
+      "senderName": "you",
+      "timestamp": "2025-11-08T10:57:27.980Z"
+    },
+    {
+      "id": "333135f1-be93-4ec8-9ba3-a267d7af4d00",
+      "text": "All Good......",
+      "senderId": "user-me",
+      "senderName": "jalal",
+      "timestamp": "2025-11-08T10:57:31.805Z",
+      "edited": true,
+      "editedAt": "2025-11-08T10:59:40.705Z"
+    },
+    {
+      "id": "ba6fa0f6-d736-485f-8284-c775d68e4baa",
+      "text": "What about you?",
+      "senderId": "user-you",
+      "senderName": "you",
+      "timestamp": "2025-11-08T10:57:38.150Z"
+    },
+    {
+      "id": "dfc55515-8fcc-4f6a-9454-312e30b2f33b",
+      "text": "Good",
+      "senderId": "user-you",
+      "senderName": "you",
+      "timestamp": "2025-11-08T10:57:41.505Z"
+    },
+    {
+      "id": "d7e0366c-e5c2-450d-8f92-686042b23f8c",
+      "text": "Ok, All the best for the Job...",
+      "senderId": "user-me",
+      "senderName": "jalal",
+      "timestamp": "2025-11-08T10:59:55.700Z"
+    },
+    {
+      "id": "68e9f35f-2358-4a93-8ebe-11c721991e0c",
+      "text": "Thank You very Much",
+      "senderId": "user-you",
+      "senderName": "you",
+      "timestamp": "2025-11-08T11:00:06.270Z"
+    },
+    {
+      "id": "6dae1869-f32e-47a4-8061-9d3d210f72a9",
+      "text": "Keep  me in your prayers....",
+      "senderId": "user-you",
+      "senderName": "you",
+      "timestamp": "2025-11-08T11:00:15.092Z"
+    }
+  ]
 }
