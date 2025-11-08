@@ -10,9 +10,14 @@ ___
 
 https://github.com/user-attachments/assets/bf9329d3-0747-4009-92f8-2023cc7be0e1
 
+- **If the video doesn’t play on GitHub, you can download the demo video from Google Drive:** [Demo-Video](https://drive.google.com/file/d/1g9oGRol-Yz_D2TzZmlH3gGaYJGGJwm02/view?usp=share_link)
 ---
 
 ## Getting Started
+
+### Requirements
+- Node.js v16 or higher  
+- npm (comes with Node.js)
 
 ### Installation & Setup
 
@@ -104,4 +109,7 @@ The following areas could be explored:
 - **For any support** - Email: [jalaluddin0046356@gmail.com](jalaluddin0046356@gmail.com)
 ---
 
-_This project was built to showcase a comprehensive understanding of full-stack principles and a dedication to writing high-quality, professional-grade code. Thank you for the opportunity._
+This project was built to showcase a comprehensive understanding of full-stack principles and a dedication to writing high-quality, professional-grade code.
+
+---
+Thank you for the opportunity & reviewing my submission.
