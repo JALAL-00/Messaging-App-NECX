@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useEffect, useCallback, use
 import { getUsers, createUser, getMessages, sendMessage, deleteMessage, updateMessage } from '../services/api';
 import { format } from 'date-fns';
 
-const AppContext = createContext();
+export const AppContext = createContext();
 export const useAppContext = () => useContext(AppContext);
 
 export const AppProvider = ({ children }) => {
