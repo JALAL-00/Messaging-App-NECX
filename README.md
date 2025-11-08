@@ -87,10 +87,3 @@ Unit tests have been implemented for the `<Message />` component to ensure rende
 - **Real-time Updates:** A smart polling mechanism was implemented on the frontend. This provides a "real-time" feel while being simple to implement and reliable. The system is optimized to pause polling when the tab is inactive, demonstrating an understanding of performance conservation.
 - **Backend Import:** The data import feature is handled securely on the backend via a dedicated `multipart/form-data` endpoint using `multer`. This is the robust, correct approach, preventing security issues and data corruption that would arise from a frontend-only implementation.
 
-## 💡 Future Improvements
-
-Given more time, the following improvements could be made:
-- **WebSocket Integration:** Replace polling with WebSockets (`socket.io`) for true, instantaneous real-time communication.
-- **User Authentication:** Implement a proper login/registration system to make it a multi-user application.
-- **Database Migration:** For a production environment, migrate from `lowdb` to a more scalable database like PostgreSQL or MongoDB.
-- **End-to-End Testing:** Supplement the existing unit tests with end-to-end tests using a framework like Cypress to test full user flows.
