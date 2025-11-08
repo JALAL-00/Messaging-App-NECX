@@ -3,33 +3,41 @@ import { useAppContext } from '../contexts/AppContext';
 import { useEffect, useRef } from 'react';
 
 function MessageList() {
-    const { messages, currentUser, formatTimestamp } = useAppContext();
+    // --- Swapped `messages` for `filteredMessages` from the context ---
+    const { filteredMessages, searchQuery } = useAppContext();
     const endOfMessagesRef = useRef(null);
 
-    // Auto-scroll to the bottom when new messages arrive
+    // Auto-scroll to the bottom only when the list is not being filtered
     useEffect(() => {
-        endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+        if (!searchQuery) {
+            endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [filteredMessages, searchQuery]);
 
-    if (!messages || messages.length === 0) {
+    // Handle case where no messages exist at all
+    if (!filteredMessages) {
+        return <div className="h-full flex items-center justify-center text-text-secondary">Loading...</div>
+    }
+
+    // Handle case where there are no messages, OR search yields no results
+    if (filteredMessages.length === 0) {
         return (
             <div className="h-full flex items-center justify-center text-text-secondary">
-                No messages yet. Start the conversation!
+                {searchQuery ? `No messages found for "${searchQuery}"` : "No messages yet. Start the conversation!"}
             </div>
         )
     }
 
     return (
         <div className="p-4 sm:p-6 h-full overflow-y-auto">
-             {/* This outer div needs to be a flex container */}
             <div className="flex flex-col space-y-4">
-                {messages.map((msg) => (
+                {/* --- MAPPING OVER THE FILTERED LIST --- */}
+                {filteredMessages.map((msg) => (
                     <Message
                         key={msg.id}
                         message={msg} 
                     />
                 ))}
-                {/* Dummy div to scroll to */}
                 <div ref={endOfMessagesRef} />
             </div>
         </div>

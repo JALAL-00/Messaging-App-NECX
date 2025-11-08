@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect, useCallback, useRef } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback, useRef, useMemo } from 'react';
 import { getUsers, createUser, getMessages, sendMessage, deleteMessage, updateMessage } from '../services/api';
 import { format } from 'date-fns';
 
@@ -10,159 +10,179 @@ export const AppProvider = ({ children }) => {
     const [users, setUsers] = useState([]);
     const [messages, setMessages] = useState([]);
     const [currentUser, setCurrentUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); // For initial page load
+    const [isSubmitting, setIsSubmitting] = useState(false); // For form actions (create, send, edit)
     const [error, setError] = useState(null);
     const [toast, setToast] = useState(null);
-    const pollIntervalRef = useRef(null); // Ref to hold the polling interval ID
+    const [searchQuery, setSearchQuery] = useState('');
+    const pollIntervalRef = useRef(null);
 
-    // --- UTILITY FUNCTIONS ---
-    const showToast = useCallback((message, type = 'success') => setToast({ message, type }), []);
+    // --- UTILITIES ---
+    const showToast = useCallback((message, type = "success") => setToast({ message, type }), []);
     const hideToast = () => setToast(null);
     const formatTimestamp = (isoString) => {
-        if (!isoString) return '';
+        if (!isoString) return "";
         try {
-            return format(new Date(isoString), 'p'); // 'p' is a flexible, locale-sensitive time format
+            return format(new Date(isoString), "p"); // "p" is locale-sensitive time, e.g., 3:42 PM
         } catch {
             return "Invalid time";
         }
     };
 
-    // --- INITIAL DATA FETCH ---
-    useEffect(() => {
-        const fetchInitialData = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                const [usersRes, messagesRes] = await Promise.all([getUsers(), getMessages()]);
-                
-                const fetchedUsers = usersRes.data || [];
-                setUsers(fetchedUsers);
-                setMessages(messagesRes.data || []);
-                setCurrentUser(fetchedUsers.find(u => u.name === 'me') || fetchedUsers[0] || null);
-            } catch (err) {
-                console.error("Failed to fetch initial data:", err);
-                setError("Could not connect to the server. Please check your network and try again.");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchInitialData();
+    // --- CORE DATA FETCHING LOGIC ---
+    const fetchAllData = useCallback(async (isInitialLoad = false) => {
+        try {
+            if (isInitialLoad) setLoading(true);
+            const [usersRes, messagesRes] = await Promise.all([getUsers(), getMessages()]);
+            const fetchedUsers = usersRes.data || [];
+            const fetchedMessages = messagesRes.data || [];
+
+            setUsers(fetchedUsers);
+            setMessages(fetchedMessages);
+
+            // Keep the current user consistent after a data refresh
+            setCurrentUser(prev =>
+                fetchedUsers.find(u => u.id === prev?.id) || // User still exists
+                fetchedUsers.find(u => u.name === "me") ||    // Default to 'me'
+                fetchedUsers[0] ||                           // Default to the first user
+                null
+            );
+        } catch (err) {
+            console.error("Failed to fetch data:", err);
+            setError("Could not connect to the server.");
+        } finally {
+            if (isInitialLoad) setLoading(false);
+        }
     }, []);
 
-    // --- API HANDLERS ---
+    // Initial load effect
+    useEffect(() => {
+        fetchAllData(true);
+    }, [fetchAllData]);
+    
+    // --- API ACTION HANDLERS ---
     const handleCreateUser = async (name) => {
+        setIsSubmitting(true);
         try {
-            const response = await createUser(name);
-            setUsers(prev => [...prev, response.data]);
-            showToast(`User "${response.data.name}" created successfully!`, 'success');
+            const res = await createUser(name);
+            setUsers(prev => [...prev, res.data]);
+            showToast(`User "${res.data.name}" created!`);
         } catch (err) {
-            const msg = err.response?.data?.error || "An error occurred while creating the user.";
-            showToast(msg, 'error');
+            showToast(err.response?.data?.error || "Error creating user.", "error");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     const handleSendMessage = async (text) => {
-        if (!currentUser) return showToast("Please select a sender first.", 'error');
+        if (!currentUser) return showToast("Select a sender first.", "error");
+        setIsSubmitting(true);
         try {
-            const response = await sendMessage({ text: text.trim(), senderId: currentUser.id });
-            setMessages(prev => [...prev, response.data]);
+            await sendMessage({ text: text.trim(), senderId: currentUser.id });
+            await fetchAllData(); // Re-sync to get the new message
         } catch (err) {
-            const msg = err.response?.data?.error || "Could not send the message.";
-            showToast(msg, 'error');
+            showToast(err.response?.data?.error || "Could not send message.", "error");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+    
+    const handleUpdateMessage = async (id, newText) => {
+        setIsSubmitting(true);
+        try {
+            await updateMessage(id, newText);
+            await fetchAllData(); // Re-sync to get the edited message
+            showToast("Message updated.", "success");
+        } catch (err) {
+            showToast(err.response?.data?.error || "Could not update message.", "error");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     const handleDeleteMessage = async (id) => {
+        // Optimistic UI update for a faster feel
+        const originalMessages = messages;
+        setMessages(prev => prev.filter(msg => msg.id !== id));
         try {
             await deleteMessage(id);
-            setMessages(prevMessages => prevMessages.filter(msg => msg.id !== id));
-            showToast("Message deleted.", 'success');
+            showToast("Message deleted.");
         } catch (err) {
-            const msg = err.response?.data?.error || "Could not delete the message.";
-            showToast(msg, 'error');
+            showToast(err.response?.data?.error || "Could not delete message.", "error");
+            setMessages(originalMessages); // Revert UI if the API call fails
         }
     };
-
-    // --- EDIT MESSAGE ENHANCEMENT ---
-    const handleUpdateMessage = async (id, newText) => {
-        try {
-            const response = await updateMessage(id, newText);
-            const updatedMessage = response.data;
-            // Find the message in the state and replace it with the updated version
-            setMessages(prevMessages => prevMessages.map(msg => 
-                msg.id === id ? updatedMessage : msg
-            ));
-            showToast("Message updated.", 'success');
-        } catch (err) {
-            const msg = err.response?.data?.error || "Could not update message.";
-            showToast(msg, 'error');
-        }
+    
+    // --- DATA EXPORT/IMPORT ---
+    const handleExportData = async () => {
+        showToast("Exporting data...", "success");
+        const [usersRes, messagesRes] = await Promise.all([getUsers(), getMessages()]);
+        const data = { users: usersRes.data, messages: messagesRes.data };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "necx-messages-backup.json";
+        a.click();
+        URL.revokeObjectURL(url);
     };
 
-
-    // --- REAL-TIME POLLING LOGIC ---
-    const fetchAndUpdateMessages = useCallback(async () => {
-        try {
-            const response = await getMessages();
-            const latestMessages = response.data || [];
-            // Update state only if the message list has changed to prevent needless re-renders
-            setMessages(currentMessages => {
-                if (JSON.stringify(currentMessages) !== JSON.stringify(latestMessages)) {
-                    return latestMessages;
-                }
-                return currentMessages;
-            });
-        } catch (err) {
-            console.error("Polling error:", err);
-        }
-    }, []);
-
-    useEffect(() => {
-        const startPolling = () => {
-            clearInterval(pollIntervalRef.current);
-            fetchAndUpdateMessages();
-            pollIntervalRef.current = setInterval(fetchAndUpdateMessages, 3000); // Poll every 3 seconds
-        };
-        
-        const stopPolling = () => {
-            clearInterval(pollIntervalRef.current);
-        };
-        
-        const handleVisibilityChange = () => {
-            if (document.hidden) {
-                stopPolling();
-            } else {
-                startPolling();
+    const handleImportData = (file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (!data.users || !data.messages) throw new Error("Invalid file format.");
+                // NOTE: A real import requires a backend endpoint. This is a demonstration.
+                showToast("Data loaded. A real import requires backend support.", "success");
+                setUsers(data.users);
+                setMessages(data.messages);
+            } catch (err) {
+                showToast(err.message, "error");
             }
         };
-        
-        startPolling();
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-
-        // Cleanup to prevent memory leaks
-        return () => {
-            stopPolling();
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-        };
-    }, [fetchAndUpdateMessages]);
-
-    // --- CONTEXT VALUE ---
-    // This is the public API of our context, provided to all components
-    const value = {
-        users,
-        messages,
-        currentUser,
-        loading,
-        error,
-        toast,
-        hideToast,
-        setCurrentUser,
-        handleCreateUser,
-        handleSendMessage,
-        formatTimestamp,
-        handleDeleteMessage,
-        handleUpdateMessage // <-- Exporting the new function
+        reader.readAsText(file);
     };
 
-    return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+    // --- REAL-TIME POLLING ---
+    useEffect(() => {
+        const poll = () => fetchAllData(false); // Fetch without setting loading spinner
+        const start = () => {
+            clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = setInterval(poll, 3000); // Poll every 3 seconds
+        };
+        const stop = () => clearInterval(pollIntervalRef.current);
+        const handleVisibility = () => {
+            if (document.hidden) stop(); else start();
+        };
+        start();
+        document.addEventListener("visibilitychange", handleVisibility);
+        return () => {
+            stop();
+            document.removeEventListener("visibilitychange", handleVisibility);
+        };
+    }, [fetchAllData]);
+
+    // --- SEARCH FILTERING ---
+    const filteredMessages = useMemo(() => {
+        if (!searchQuery.trim()) return messages;
+        const q = searchQuery.toLowerCase();
+        return messages.filter(msg =>
+            msg.text.toLowerCase().includes(q) ||
+            msg.senderName?.toLowerCase().includes(q)
+        );
+    }, [messages, searchQuery]);
+
+    // --- CONTEXT VALUE ---
+    const value = {
+        users, messages, filteredMessages, currentUser, loading, isSubmitting, error, toast, hideToast,
+        setCurrentUser, handleCreateUser, handleSendMessage, handleDeleteMessage, handleUpdateMessage,
+        handleExportData, handleImportData, formatTimestamp, searchQuery, setSearchQuery
+    };
+
+    return (
+        <AppContext.Provider value={value}>
+            {children}
+        </AppContext.Provider>
+    );
 };
