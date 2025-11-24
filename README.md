@@ -1,6 +1,6 @@
-# NECX Messaging App - Take-Home Project Submission
+# NECX Messaging App
 
-Thank you for the opportunity to build the NECX Messaging App. This document outlines the completed project, which was built upon the provided foundation to create a feature-rich, polished, and robust full-stack application using React and Express.js.
+This document outlines the completed project, which was built upon the provided foundation to create a feature-rich, polished, and robust full-stack application using React and Express.js.
 
 The project not only fulfills all core requirements but also implements a comprehensive suite of the optional enhancements to demonstrate a deeper understanding of modern web development best practices.
 
@@ -107,9 +107,3 @@ The following areas could be explored:
 
 ---
 - **For any support** - Email: [jalaluddin0046356@gmail.com](jalaluddin0046356@gmail.com)
----
-
-This project was built to showcase a comprehensive understanding of full-stack principles and a dedication to writing high-quality, professional-grade code.
-
----
-Thank you for the opportunity & reviewing my submission.
